@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<result method="upload.getinfo" status="ok">
+	<upload url="http://fs10u.sendspace.com/apiupload?DESTINATION_DIR=5&amp;UPLOAD_IDENTIFIER=294106501.1401706968.B19E01DE.24.0&amp;MAX_FILE_SIZE=314572800" progress_url="http://fs10u.sendspace.com/progressapiupload.html?UPLOAD_IDENTIFIER=294106501.1401706968.B19E01DE.24.0&amp;limit=314572800&amp;nginx=1" max_file_size="314572800" upload_identifier="294106501.1401706968.B19E01DE.24.0" extra_info="lw7vWvWwNX6zykm7wGeEhpCR9062%3BlqVC1TAGO%2BRitTIZFNosrR6qR6VRE%2B3BLrZr1oqJqCh9cI%2FZJiL4gYstNfPuSE1YPjNCAyBXG3HpUg%3D%3D"/>
+</result>

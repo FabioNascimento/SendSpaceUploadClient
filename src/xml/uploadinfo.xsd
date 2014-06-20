@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="result">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="upload" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="url" type="xs:string" />
+            <xs:attribute name="progress_url" type="xs:string" />
+            <xs:attribute name="max_file_size" type="xs:string" />
+            <xs:attribute name="upload_identifier" type="xs:string" />
+            <xs:attribute name="extra_info" type="xs:string" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="method" type="xs:string" />
+      <xs:attribute name="status" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="result" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

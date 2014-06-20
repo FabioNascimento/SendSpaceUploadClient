@@ -1,4 +1,5 @@
-﻿using RestHttpClient.Results;
+﻿using RestHttpClient.Events;
+using RestHttpClient.Results;
 using RestSharp;
 using RestSharp.Serializers;
 using System;
@@ -17,9 +18,11 @@ namespace RestHttpClient
 {
     public class HttpService
     {
+        public event OnSendingHandler OnSending;
+
         string _apiKeyDefault = "PSKWEA71BT";
         string _baseUri = "http://api.sendspace.com/rest/";
-
+        string _statusProgress;
         public TokenResult GetToken(string apiKey)
         {
             var uriCreateToken = string.Format(@"?method=auth.createtoken&api_key={0}&api_version=1.0&response_format=xml&app_version=0.1", string.IsNullOrEmpty(apiKey) ? _apiKeyDefault : apiKey);
@@ -71,6 +74,19 @@ namespace RestHttpClient
             var resultUpload = GetResultUploadBy(result.Content);
 
             return resultUpload;
+        }
+
+        public ProgressUpload GetProgressUpload(ResultUpload resultUpload)
+        {
+            if (resultUpload == null)
+                throw new Exception("Dados upload não informado");
+
+
+            var restClient = new RestClient();
+            var request = new RestRequest(resultUpload.progress_url, Method.GET);
+            var progressUpload = restClient.Get<ProgressUpload>(request);
+
+            return progressUpload.Data;
         }
 
         private ResultUpload GetResultUploadBy(string xml)
@@ -138,63 +154,8 @@ namespace RestHttpClient
             return sb.ToString();
         }
 
-        public void SendFile(string fileName, ResultUpload resultUpload)
-        {
 
-            var progress = new ProgressMessageHandler();
-
-            var client = HttpClientFactory.Create(progress);
-
-            var method = new MultipartFormDataContent();
-
-            var streamContent = new StreamContent(File.Open(fileName, FileMode.Open));
-            method.Add(streamContent, "filename");
-
-            var result = client.PostAsync(resultUpload.url, method);
-
-        }
-
-        public async Task<string> Upload(string fileName, ResultUpload resultUpload)
-        {
-            using (var client = new HttpClient())
-            {
-                using (var content =
-                    new MultipartFormDataContent())
-                {
-
-                    content.Headers.Add("extra_info", resultUpload.extra_info);
-                    content.Headers.Add("upload_identifier", resultUpload.upload_identifier);
-                    content.Headers.Add("max_file_size", resultUpload.max_file_size);
-                    content.Add(new StreamContent(new MemoryStream(File.ReadAllBytes(fileName))), "bilddatei", "upload.jpg");
-                    content.Add(new StringContent("extra_info=" + resultUpload.extra_info));
-                    content.Add(new StringContent("upload_identifier=" + resultUpload.upload_identifier));
-                    content.Add(new StringContent("max_file_size=" + resultUpload.max_file_size));
-
-
-                    var list = new List<KeyValuePair<string, string>>(){
-                        new KeyValuePair<string, string>("extra_info", resultUpload.extra_info),
-                            new KeyValuePair<string, string>("upload_identifier", resultUpload.upload_identifier),
-                            new KeyValuePair<string, string>("max_file_size", resultUpload.max_file_size)
-                    };
-                    content.Add(new FormUrlEncodedContent(list));
-
-
-
-
-
-                    using (
-                       var message =
-                           await client.PostAsync(resultUpload.url, content))
-                    {
-                        var input = await message.Content.ReadAsStringAsync();
-
-                        return !string.IsNullOrWhiteSpace(input) ? System.Text.RegularExpressions.Regex.Match(input, @"http://\w*\.directupload\.net/images/\d*/\w*\.[a-z]{3}").Value : null;
-                    }
-                }
-            }
-        }
-
-        public void UploadFile(string fileName, ResultUpload resultUpload)
+        public async void UploadFile(string fileName, ResultUpload resultUpload)
         {
             if (!File.Exists(fileName))
                 throw new Exception("Arquivo não encontrado");
@@ -206,8 +167,10 @@ namespace RestHttpClient
             request.AddParameter("MAX_FILE_SIZE", resultUpload.max_file_size);
             request.AddParameter("UPLOAD_IDENTIFIER", resultUpload.upload_identifier);
             request.AddParameter("extra_info", resultUpload.extra_info);
+
             //calling server with restClient
             RestClient restClient = new RestClient();
+
             restClient.ExecuteAsync(request, (response) =>
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -221,6 +184,28 @@ namespace RestHttpClient
 
                 }
             });
+
+            var _statusProgress = GetProgressUpload(resultUpload).Status;
+            
+            while (_statusProgress.ToLower().Equals("ok"))
+            {
+
+                var progressInternal = GetProgressUpload(resultUpload);
+                SetProgressEventArgs(progressInternal, false);
+                _statusProgress = progressInternal.Status;
+            }
+
+            SetProgressEventArgs(GetProgressUpload(resultUpload), true);
+
+        }
+
+        void SetProgressEventArgs(ProgressUpload progressUpload, bool done)
+        {
+            if (OnSending != null)
+            {
+                var args = new EventProgressArgs() { Done = done, ProgressInfo = progressUpload };
+                OnSending(this, args);
+            }
         }
     }
 }

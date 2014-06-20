@@ -39,12 +39,14 @@
             this.label4 = new System.Windows.Forms.Label();
             this.buttonFile = new System.Windows.Forms.Button();
             this.buttonSend = new System.Windows.Forms.Button();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // buttonClose
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonClose.Location = new System.Drawing.Point(12, 143);
+            this.buttonClose.Location = new System.Drawing.Point(9, 143);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 0;
@@ -83,9 +85,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(9, 45);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(43, 13);
+            this.label2.Size = new System.Drawing.Size(29, 13);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Usuário";
+            this.label2.Text = "User";
             // 
             // textBoxPassword
             // 
@@ -102,9 +104,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(9, 71);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 13);
+            this.label3.Size = new System.Drawing.Size(53, 13);
             this.label3.TabIndex = 5;
-            this.label3.Text = "Senha";
+            this.label3.Text = "Password";
             // 
             // textBoxFileName
             // 
@@ -122,9 +124,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(9, 97);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(43, 13);
+            this.label4.Size = new System.Drawing.Size(23, 13);
             this.label4.TabIndex = 7;
-            this.label4.Text = "Arquivo";
+            this.label4.Text = "File";
             // 
             // buttonFile
             // 
@@ -148,11 +150,31 @@
             this.buttonSend.UseVisualStyleBackColor = true;
             this.buttonSend.Click += new System.EventHandler(this.buttonSend_Click);
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar1.Location = new System.Drawing.Point(98, 116);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(240, 22);
+            this.progressBar1.TabIndex = 11;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(9, 119);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(48, 13);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "Progress";
+            // 
             // frmUpload
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(384, 178);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.buttonSend);
             this.Controls.Add(this.buttonFile);
             this.Controls.Add(this.textBoxFileName);
@@ -187,6 +209,8 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button buttonFile;
         private System.Windows.Forms.Button buttonSend;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label label5;
     }
 }
 

@@ -14,6 +14,7 @@ namespace RestHttpClient
         public frmUpload()
         {
             InitializeComponent();
+            CheckForIllegalCrossThreadCalls = false;
         }
 
         private void buttonClose_Click(object sender, EventArgs e)
@@ -37,13 +38,27 @@ namespace RestHttpClient
                 var login = httpSrv.Login(token, textBoxUserName.Text, textBoxPassword.Text);
                 var uploadInfo = httpSrv.GetUploadInf(login);
 
+                httpSrv.OnSending += httpSrv_OnSending;
+
                 var fileName = textBoxFileName.Text;
                 httpSrv.UploadFile(fileName, uploadInfo);
-                
+                buttonSend.Enabled = false;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        void httpSrv_OnSending(object sender, Events.EventProgressArgs args)
+        {
+            Application.DoEvents();
+            progressBar1.Value = (int) args.ProgressInfo.Meter;
+
+            if (args.Done)
+            {
+                buttonSend.Enabled = args.Done;
+                MessageBox.Show("Uploaded file");
             }
         }
 

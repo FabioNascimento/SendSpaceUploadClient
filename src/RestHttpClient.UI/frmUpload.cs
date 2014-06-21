@@ -42,7 +42,7 @@ namespace RestHttpClient
 
                 var fileName = textBoxFileName.Text;
                 httpSrv.UploadFile(fileName, uploadInfo);
-                buttonSend.Enabled = false;
+                
             }
             catch (Exception ex)
             {
@@ -57,8 +57,9 @@ namespace RestHttpClient
 
             if (args.Done)
             {
-                buttonSend.Enabled = args.Done;
+                progressBar1.Value = 0;
                 MessageBox.Show("Uploaded file");
+
             }
         }
 

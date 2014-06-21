@@ -176,7 +176,7 @@ namespace RestHttpClient
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     //upload successfull
-
+                    SetProgressEventArgs(GetProgressUpload(resultUpload), true);
                 }
                 else
                 {
@@ -195,7 +195,7 @@ namespace RestHttpClient
                 _statusProgress = progressInternal.Status;
             }
 
-            SetProgressEventArgs(GetProgressUpload(resultUpload), true);
+           
 
         }
 

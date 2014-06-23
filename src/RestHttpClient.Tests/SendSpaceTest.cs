@@ -21,7 +21,7 @@ namespace RestHttpClient.Tests
 
             var fileName = @"..\..\..\xml\upload.xsd";
 
-            httpSrv.UploadFile(fileName, uploadInfo);
+            httpSrv.UploadFileAsync(fileName, uploadInfo);
             
         }
         

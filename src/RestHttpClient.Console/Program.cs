@@ -12,14 +12,24 @@ namespace RestHttpClient.Cmd
         const string _apiKey = "apikey";
         public static void Main(string[] args)
         {
-            SendFile(args);
+            try
+            {
+                SendFile(args);
+            }
+            catch (Exception ex)
+            {
+                WriteMessage(ex.Message, ConsoleColor.Red);
+                SendFile(new String[] { Console.ReadLine() });
+            }
+
         }
 
         static void SendFile(string[] args)
         {
-            args = new string[] { @"file:e:\BugNET-1.5.265-Install.zip user:moisesmiranda pwd:Mjm007#!" };
-            ValidSintaxCommand(args);
-            if (HasApiKey())
+
+            if (!SintaxHelper.ValidSintaxCommand(args))
+                SendFile(new String[] { Console.ReadLine() });
+            else if (HasApiKey())
             {
                 var commandArgs = GetCommandArgs(args);
                 var restSrv = new RestHttpClient.HttpService();
@@ -28,7 +38,10 @@ namespace RestHttpClient.Cmd
                 var token = restSrv.GetToken(GetApiKeyValue());
                 var login = restSrv.Login(token, commandArgs.UserName, commandArgs.Password);
                 var uploadInfo = restSrv.GetUploadInf(login);
-                restSrv.UploadFile(commandArgs.FileName, uploadInfo);
+                Console.WriteLine("Aguarde envio!");
+                restSrv.UploadFileAsync(commandArgs.FileName, uploadInfo);
+
+                Console.ReadKey();
             }
             else
             {
@@ -62,18 +75,7 @@ namespace RestHttpClient.Cmd
 
         }
 
-        static void ValidSintaxCommand(string[] args)
-        {
-            if (args.Length == 0)
-                WriteHelpMessage();
 
-            var command = args[0];
-
-            var commandArgs = command.Split(' ');
-            if (commandArgs.Length != 3)
-                WriteHelpMessage();
-
-        }
 
         static CommandArgs GetCommandArgs(string[] args)
         {
@@ -94,22 +96,7 @@ namespace RestHttpClient.Cmd
             return commandArgs;
         }
 
-        private static void WriteHelpMessage()
-        {
-            //foreach (ConsoleColor item in Enum.GetValues(typeof(ConsoleColor)))
-            //{
-            //    WriteMessage(item.ToString()+"-Cor", item);
-            //}
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("sendspace <file:path user:username pwd:password");
-            Console.WriteLine();
-            Console.WriteLine(string.Format("{0,-12}{1,-30}", "file", "full path file for send")); ;
-            Console.WriteLine(string.Format("{0,-12}{1,-30}", "user", "user name of account send space")); ;
-            Console.WriteLine(string.Format("{0,-12}{1,-30}", "pwd", "password of user account send space")); ;
 
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.ReadKey();
-        }
 
         static bool HasApiKey()
         {

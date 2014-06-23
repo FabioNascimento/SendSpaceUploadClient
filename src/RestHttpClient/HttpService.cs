@@ -155,7 +155,7 @@ namespace RestHttpClient
         }
 
 
-        public async void UploadFile(string fileName, ResultUpload resultUpload)
+        public async void UploadFileAsync(string fileName, ResultUpload resultUpload)
         {
             if (!File.Exists(fileName))
                 throw new Exception("Arquivo não encontrado");
@@ -171,7 +171,7 @@ namespace RestHttpClient
             //calling server with restClient
             RestClient restClient = new RestClient();
 
-            restClient.ExecuteAsync(request, (response) =>
+           restClient.ExecuteAsync(request, (response) =>
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -195,10 +195,9 @@ namespace RestHttpClient
                 _statusProgress = progressInternal.Status;
             }
 
-           
-
         }
 
+        
         void SetProgressEventArgs(ProgressUpload progressUpload, bool done)
         {
             if (OnSending != null)

@@ -41,7 +41,7 @@ namespace RestHttpClient
                 httpSrv.OnSending += httpSrv_OnSending;
 
                 var fileName = textBoxFileName.Text;
-                httpSrv.UploadFile(fileName, uploadInfo);
+                httpSrv.UploadFileAsync(fileName, uploadInfo);
                 
             }
             catch (Exception ex)

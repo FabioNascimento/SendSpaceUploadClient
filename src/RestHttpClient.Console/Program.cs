@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +15,15 @@ namespace RestHttpClient.Cmd
         {
             try
             {
-                SendFile(args);
+                WindowsIdentity user = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new WindowsPrincipal(user);
+                if (principal.IsInRole(WindowsBuiltInRole.Administrator))
+                    SendFile(args);
+                else
+                {
+                    WriteMessage("No administrator user", ConsoleColor.Red);
+                    
+                }
             }
             catch (Exception ex)
             {

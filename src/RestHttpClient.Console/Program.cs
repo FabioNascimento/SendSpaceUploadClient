@@ -13,6 +13,7 @@ namespace RestHttpClient.Cmd
         const string _apiKey = "apikey";
         public static void Main(string[] args)
         {
+           
             try
             {
                 WindowsIdentity user = WindowsIdentity.GetCurrent();
@@ -21,26 +22,64 @@ namespace RestHttpClient.Cmd
                     SendFile(args);
                 else
                 {
-                    WriteMessage("No administrator user", ConsoleColor.Red);
-                    
+                    WriteLineMessage("No administrator user", ConsoleColor.Red);
+
                 }
             }
             catch (Exception ex)
             {
-                WriteMessage(ex.Message, ConsoleColor.Red);
+                WriteLineMessage(ex.Message, ConsoleColor.Red);
                 SendFile(new String[] { Console.ReadLine() });
             }
 
         }
 
+        public static string ReadPassword()
+        {
+            string password = "";
+            ConsoleKeyInfo info = Console.ReadKey(true);
+            while (info.Key != ConsoleKey.Enter)
+            {
+                if (info.Key != ConsoleKey.Backspace)
+                {
+                    Console.Write("*");
+                    password += info.KeyChar;
+                }
+                else if (info.Key == ConsoleKey.Backspace)
+                {
+                    if (!string.IsNullOrEmpty(password))
+                    {
+
+                        password = password.Substring(0, password.Length - 1);
+
+                        int pos = Console.CursorLeft;
+
+                        Console.SetCursorPosition(pos - 1, Console.CursorTop);
+
+                        Console.Write(" ");
+
+                        Console.SetCursorPosition(pos - 1, Console.CursorTop);
+                    }
+                }
+                info = Console.ReadKey(true);
+            }
+            // add a new line because user pressed enter at the end of their password
+            Console.WriteLine();
+            return password;
+        }
+
+
         static void SendFile(string[] args)
         {
-
+            Console.Title = "Sendspace upload";
+            Console.ForegroundColor = ConsoleColor.White;
             if (!SintaxHelper.ValidSintaxCommand(args))
                 SendFile(new String[] { Console.ReadLine() });
             else if (HasApiKey())
             {
                 var commandArgs = GetCommandArgs(args);
+                WriteMessage("Password: ", ConsoleColor.White);
+                commandArgs.Password = ReadPassword();
                 var restSrv = new RestHttpClient.HttpService();
                 restSrv.OnSending += restSrv_OnSending;
 
@@ -54,14 +93,14 @@ namespace RestHttpClient.Cmd
             }
             else
             {
-                WriteMessage("Não foi configurada API KEY", ConsoleColor.Red);
-                WriteMessage("Informe a API Key: ", ConsoleColor.Green);
+                WriteLineMessage("Não foi configurada API KEY", ConsoleColor.Red);
+                WriteLineMessage("Informe a API Key: ", ConsoleColor.Green);
                 Console.ForegroundColor = ConsoleColor.White;
                 var apiKey = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(apiKey))
                 {
-                    WriteMessage("API KEY não informada", ConsoleColor.Red);
+                    WriteLineMessage("API KEY não informada", ConsoleColor.Red);
                     SendFile(args);
                 }
                 SetApiKey(apiKey);
@@ -71,20 +110,29 @@ namespace RestHttpClient.Cmd
 
         static void restSrv_OnSending(object sender, Events.EventProgressArgs args)
         {
+            var count = 1;
             if (!args.Done)
             {
-                Console.Clear();
-                Console.Write(string.Format("Sending {0}%", args.ProgressInfo.Meter));
+                ClearCurrentConsoleLine();
+                var msgPercent = string.Format("Sending {0}%", args.ProgressInfo.Meter);
+                Console.Write(msgPercent);
             }
             else
             {
-                WriteMessage("File uploaded", ConsoleColor.Green);
+                WriteLineMessage("", ConsoleColor.White);
+                WriteLineMessage("File uploaded", ConsoleColor.Green);
                 Console.ReadKey();
             }
-
         }
 
-
+        public static void ClearCurrentConsoleLine()
+        {
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(0, Console.CursorTop);
+            for (int i = 0; i < Console.WindowWidth; i++)
+                Console.Write(" ");
+            Console.SetCursorPosition(0, currentLineCursor);
+        }
 
         static CommandArgs GetCommandArgs(string[] args)
         {
@@ -94,11 +142,11 @@ namespace RestHttpClient.Cmd
             var allArgs = command.Split(' ');
             foreach (var item in allArgs)
             {
-                if (item.ToLower().StartsWith("file:"))
+                if (item.ToLower().StartsWith("file="))
                     commandArgs.FileName = item.Substring(5, item.Length - 5);
-                else if (item.ToLower().StartsWith("user:"))
+                else if (item.ToLower().StartsWith("user="))
                     commandArgs.UserName = item.Substring(5, item.Length - 5);
-                else if (item.ToLower().StartsWith("pwd:"))
+                else if (item.ToLower().StartsWith("pwd="))
                     commandArgs.Password = item.Substring(4, item.Length - 4);
             }
 
@@ -121,10 +169,16 @@ namespace RestHttpClient.Cmd
             return apiKeyValue;
         }
 
-        static void WriteMessage(string msg, ConsoleColor color)
+        static void WriteLineMessage(string msg, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(msg);
+        }
+
+        static void WriteMessage(string msg, ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+            Console.Write(msg);
         }
 
         static void SetApiKey(string apiKey)

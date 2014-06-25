@@ -12,17 +12,16 @@ namespace RestHttpClient.Cmd
         {
             if (args.Length == 0)
             {
-                WriteHelpMessage();
-                
                 return false;
             }
 
-            var command = args[0];
 
-            var commandArgs = command.Split(' ');
-            if (commandArgs.Length < 2 || commandArgs.Length>3)
+            if (args.Length < 2 || args.Length>3)
             {
-                WriteHelpMessage();
+                foreach (var item in args)
+                {
+                    Console.WriteLine(item);
+                }
                 return false;
             }
 

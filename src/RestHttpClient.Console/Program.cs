@@ -13,7 +13,7 @@ namespace RestHttpClient.Cmd
         const string _apiKey = "apikey";
         public static void Main(string[] args)
         {
-           
+
             try
             {
                 WindowsIdentity user = WindowsIdentity.GetCurrent();
@@ -30,6 +30,10 @@ namespace RestHttpClient.Cmd
             {
                 WriteLineMessage(ex.Message, ConsoleColor.Red);
                 SendFile(new String[] { Console.ReadLine() });
+            }
+            finally
+            {
+                Console.ForegroundColor = ConsoleColor.White;
             }
 
         }
@@ -74,7 +78,7 @@ namespace RestHttpClient.Cmd
             Console.Title = "Sendspace upload";
             Console.ForegroundColor = ConsoleColor.White;
             if (!SintaxHelper.ValidSintaxCommand(args))
-                SendFile(new String[] { Console.ReadLine() });
+                SintaxHelper.WriteHelpMessage();
             else if (HasApiKey())
             {
                 var commandArgs = GetCommandArgs(args);
@@ -121,7 +125,7 @@ namespace RestHttpClient.Cmd
             {
                 WriteLineMessage("", ConsoleColor.White);
                 WriteLineMessage("File uploaded", ConsoleColor.Green);
-                Console.ReadKey();
+                
             }
         }
 
@@ -136,11 +140,11 @@ namespace RestHttpClient.Cmd
 
         static CommandArgs GetCommandArgs(string[] args)
         {
-            var command = args[0];
+            
             var commandArgs = new CommandArgs();
 
-            var allArgs = command.Split(' ');
-            foreach (var item in allArgs)
+            
+            foreach (var item in args)
             {
                 if (item.ToLower().StartsWith("file="))
                     commandArgs.FileName = item.Substring(5, item.Length - 5);
